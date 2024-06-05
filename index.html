@@ -73,30 +73,6 @@
         }
         #sendButton:hover {
             background-color: #0056b3;
-        }
-        #authSection {
-            display: flex;
-            justify-content: center;
-            padding: 20px;
-        }
-        #authSection input {
-            margin: 5px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        #authSection button {
-            padding: 10px 20px;
-            border: none;
-            background-color: #007BFF;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        #authSection button:hover {
-            background-color: #0056b3;
-        }
     </style>
 </head>
 <body>
@@ -108,10 +84,6 @@
         <input type="text" id="messageInput" placeholder="Type a message..." required>
         <button type="submit" id="sendButton">Send</button>
     </form>
-    <div id="authSection">
-        <input type="text" id="authCode" placeholder="Enter access code" required>
-        <button id="authButton">Enter Chat</button>
-    </div>
 
     <!-- Firebase SDKs -->
     <script type="module">
