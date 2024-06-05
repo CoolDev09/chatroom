@@ -109,11 +109,8 @@
         <button type="submit" id="sendButton">Send</button>
     </form>
     <div id="authSection">
-        <input type="email" id="email" placeholder="Email" required>
-        <input type="password" id="password" placeholder="Password" required>
-        <button id="loginButton">Login</button>
-        <button id="signupButton">Sign Up</button>
-        <button id="logoutButton" style="display:none;">Logout</button>
+        <input type="text" id="authCode" placeholder="Enter access code" required>
+        <button id="authButton">Enter Chat</button>
     </div>
 
     <!-- Firebase SDKs -->
@@ -121,7 +118,6 @@
         // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
         // Your web app's Firebase configuration
         const firebaseConfig = {
@@ -137,18 +133,14 @@
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const auth = getAuth(app);
 
         const chat = document.getElementById('chat');
         const messageForm = document.getElementById('messageForm');
         const messageInput = document.getElementById('messageInput');
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
-        const loginButton = document.getElementById('loginButton');
-        const signupButton = document.getElementById('signupButton');
-        const logoutButton = document.getElementById('logoutButton');
+        const authCodeInput = document.getElementById('authCode');
+        const authButton = document.getElementById('authButton');
 
-        let currentUser = null;
+        let authorized = false;
 
         // Load messages from Firestore
         const messagesRef = collection(db, 'messages');
@@ -161,7 +153,7 @@
                 const messageElement = document.createElement('div');
                 messageElement.textContent = message.text;
                 messageElement.classList.add('message');
-                if (message.uid === (currentUser && currentUser.uid)) {
+                if (message.uid === 'summer2024') {
                     messageElement.classList.add('sent');
                 } else {
                     messageElement.classList.add('received');
@@ -175,54 +167,26 @@
         messageForm.addEventListener('submit', async (event) => {
             event.preventDefault();
             const message = messageInput.value.trim();
-            if (message && currentUser) {
+            if (message && authorized) {
                 await addDoc(messagesRef, {
                     text: message,
                     timestamp: serverTimestamp(),
-                    uid: currentUser.uid
+                    uid: 'summer2024'
                 });
                 messageInput.value = '';
             }
         });
 
-        // Authentication
-        loginButton.addEventListener('click', async () => {
-            const email = emailInput.value;
-            const password = passwordInput.value;
-            try {
-                await signInWithEmailAndPassword(auth, email, password);
-            } catch (error) {
-                console.error("Login failed:", error);
-            }
-        });
-
-        signupButton.addEventListener('click', async () => {
-            const email = emailInput.value;
-            const password = passwordInput.value;
-            try {
-                await createUserWithEmailAndPassword(auth, email, password);
-            } catch (error) {
-                console.error("Sign up failed:", error);
-            }
-        });
-
-        logoutButton.addEventListener('click', async () => {
-            await signOut(auth);
-        });
-
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUser = user;
+        // Authorization
+        authButton.addEventListener('click', () => {
+            const authCode = authCodeInput.value.trim();
+            if (authCode === 'summer2024') {
+                authorized = true;
                 messageForm.style.display = 'flex';
-                logoutButton.style.display = 'inline';
-                loginButton.style.display = 'none';
-                signupButton.style.display = 'none';
+                authCodeInput.style.display = 'none';
+                authButton.style.display = 'none';
             } else {
-                currentUser = null;
-                messageForm.style.display = 'none';
-                logoutButton.style.display = 'none';
-                loginButton.style.display = 'inline';
-                signupButton.style.display = 'inline';
+                alert('Invalid access code');
             }
         });
     </script>
