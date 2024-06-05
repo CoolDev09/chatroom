@@ -29,13 +29,13 @@
             background-color: #fff;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             border-radius: 8px;
+            display: flex;
+            flex-direction: column;
         }
         .message {
             padding: 10px;
             margin-bottom: 10px;
             border-radius: 5px;
-            background-color: #e9e9eb;
-            width: fit-content;
             max-width: 60%;
         }
         .message.sent {
@@ -104,7 +104,7 @@
         <h1>Chat Room</h1>
     </header>
     <div id="chat"></div>
-    <form id="messageForm">
+    <form id="messageForm" style="display:none;">
         <input type="text" id="messageInput" placeholder="Type a message..." required>
         <button type="submit" id="sendButton">Send</button>
     </form>
