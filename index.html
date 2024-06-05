@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Chat Room</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+        }
+        #chat {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin: 10px;
+        }
+        #messageForm {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #ccc;
+        }
+        #messageInput {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        #sendButton {
+            padding: 10px 20px;
+            margin-left: 10px;
+            border: none;
+            background-color: #007BFF;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="chat"></div>
+    <form id="messageForm">
+        <input type="text" id="messageInput" placeholder="Type a message..." required>
+        <button type="submit" id="sendButton">Send</button>
+    </form>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCGNiX5C_L19FkjrvQB1q8RWWZFCxCedVE",
+            authDomain: "chat-5224a.firebaseapp.com",
+            projectId: "chat-5224a",
+            storageBucket: "chat-5224a.appspot.com",
+            messagingSenderId: "759368680329",
+            appId: "1:759368680329:web:c710eb319a70da287d9758",
+            measurementId: "G-GZBJWV2BNL"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const chat = document.getElementById('chat');
+        const messageForm = document.getElementById('messageForm');
+        const messageInput = document.getElementById('messageInput');
+
+        // Load messages from Firestore
+        const messagesRef = collection(db, 'messages');
+        const q = query(messagesRef, orderBy('timestamp'));
+
+        onSnapshot(q, (snapshot) => {
+            chat.innerHTML = '';
+            snapshot.forEach((doc) => {
+                const message = doc.data();
+                const messageElement = document.createElement('div');
+                messageElement.textContent = message.text;
+                chat.appendChild(messageElement);
+            });
+            chat.scrollTop = chat.scrollHeight;
+        });
+
+        // Send a new message
+        messageForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const message = messageInput.value.trim();
+            if (message) {
+                await addDoc(messagesRef, {
+                    text: message,
+                    timestamp: serverTimestamp()
+                });
+                messageInput.value = '';
+            }
+        });
+    </script>
+</body>
+</html>
